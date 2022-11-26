@@ -11,4 +11,12 @@ namespace FileUploadExample.Models
 
         public string PhotoUrl { get; set; }
     }
+
+    public class CreatePhotoViewModel
+    {
+        [Required]
+        public string Title { get; set; }
+
+        public IFormFile UploadFile { get; set; }
+    }
 }
