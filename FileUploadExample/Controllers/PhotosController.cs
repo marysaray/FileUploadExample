@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FileUploadExample.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FileUploadExample.Controllers
 {
     public class PhotosController : Controller
     {
         private readonly PhotoContext _context;
+        private readonly IWebHostEnvironment _enviornment;
 
-        public PhotosController(PhotoContext context)
+        public PhotosController(PhotoContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _enviornment = environment;
         }
 
         // GET: Photos
