@@ -56,15 +56,36 @@ namespace FileUploadExample.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PhotoId,Title,PhotoUrl")] Photo photo)
+        public async Task<IActionResult> Create(CreatePhotoViewModel model)
         {
+            /* File need to be sent up in pieces */
+            // Generate unique file name
+            string fileName = Guid.NewGuid().ToString();
+            fileName += fileName + Path.GetExtension(model.UploadFile.FileName);
+
+            // Save file to file system
+            string uploadPath = Path.Combine(_enviornment.WebRootPath, "images", fileName);
+
+            // Create permission -- [using] keyword calls dispose automatically mirror the try-finally method.
+            using Stream fileStream = new FileStream(uploadPath, FileMode.Create);
+
+            // Copy file
+            await model.UploadFile.CopyToAsync(fileStream);
+
+            // Map view model to data model, save to Database
+            Photo photo = new()
+            {
+                Title = model.Title,
+                PhotoUrl = fileName
+            };
+
             if (ModelState.IsValid)
             {
                 _context.Add(photo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(photo);
+            return View(model);
         }
 
         // GET: Photos/Edit/5
